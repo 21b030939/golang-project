@@ -16,4 +16,13 @@ Table discipline {
   credits text
 }
 
-Ref: schedules.discipline < discipline.id
+Table discipline_schedule {
+  id bigserial [primary key]
+  created_at timestamp
+  updated_at timestamp
+  discipline bigserial
+  schedule bigserial
+}
+
+Ref: discipline_schedule.discipline < discipline.id
+Ref: discipline_schedule.schedule < schedule.id

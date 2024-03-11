@@ -14,7 +14,6 @@ func (app *application) respondWithError(w http.ResponseWriter, code int, messag
 
 func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, err := json.Marshal(payload)
-
 	if err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
 		return
@@ -26,31 +25,18 @@ func (app *application) respondWithJSON(w http.ResponseWriter, code int, payload
 }
 
 func (app *application) createScheduleHandler(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Discipline        string `json:"discipline"`
-		Cabinet           string `json:"cabinet"`
-		TimePeriod        string `json:"timePeriod"`
-	}
-
-	err := app.readJSON(w, r, &input)
-	if err != nil {
+	var input model.Schedule
+	if err := app.readJSON(r, &input); err != nil {
 		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	schedule := &model.Schedule{
-		Discipline:    input.Discipline,
-		Cabinet:       input.Cabinet,
-		TimePeriod:    input.TimePeriod,
-	}
-
-	err = app.models.Schedules.Insert(schedule)
-	if err != nil {
+	if err := app.models.Schedules.Insert(&input); err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
 		return
 	}
 
-	app.respondWithJSON(w, http.StatusCreated, schedule)
+	app.respondWithJSON(w, http.StatusCreated, input)
 }
 
 func (app *application) getScheduleHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,13 +49,13 @@ func (app *application) getScheduleHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	menu, err := app.models.Schedules.Get(id)
+	schedule, err := app.models.Schedules.Get(id)
 	if err != nil {
-		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+		app.respondWithError(w, http.StatusNotFound, "Schedule not found")
 		return
 	}
 
-	app.respondWithJSON(w, http.StatusOK, menu)
+	app.respondWithJSON(w, http.StatusOK, schedule)
 }
 
 func (app *application) updateScheduleHandler(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +70,7 @@ func (app *application) updateScheduleHandler(w http.ResponseWriter, r *http.Req
 
 	schedule, err := app.models.Schedules.Get(id)
 	if err != nil {
-		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
+		app.respondWithError(w, http.StatusNotFound, "Schedule not found")
 		return
 	}
 
@@ -94,8 +80,7 @@ func (app *application) updateScheduleHandler(w http.ResponseWriter, r *http.Req
 		TimePeriod *string `json:"timePeriod"`
 	}
 
-	err = app.readJSON(w, r, &input)
-	if err != nil {
+	if err := app.readJSON(r, &input); err != nil {
 		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -112,8 +97,7 @@ func (app *application) updateScheduleHandler(w http.ResponseWriter, r *http.Req
 		schedule.TimePeriod = *input.TimePeriod
 	}
 
-	err = app.models.Schedules.Update(schedule)
-	if err != nil {
+	if err := app.models.Schedules.Update(schedule); err != nil {
 		app.respondWithError(w, http.StatusInternalServerError, "500 Internal Server Error")
 		return
 	}
@@ -127,7 +111,7 @@ func (app *application) deleteScheduleHandler(w http.ResponseWriter, r *http.Req
 
 	id, err := strconv.Atoi(param)
 	if err != nil || id < 1 {
-		app.respondWithError(w, http.StatusBadRequest, "Invalid menu ID")
+		app.respondWithError(w, http.StatusBadRequest, "Invalid schedule ID")
 		return
 	}
 
@@ -140,12 +124,11 @@ func (app *application) deleteScheduleHandler(w http.ResponseWriter, r *http.Req
 	app.respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
+func (app *application) readJSON(r *http.Request, dst interface{}) error {
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
-	err := dec.Decode(dst)
-	if err != nil {
+	if err := dec.Decode(dst); err != nil {
 		return err
 	}
 

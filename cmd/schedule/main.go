@@ -5,17 +5,16 @@ import (
 	"flag"
 	"github.com/21b030939/golang-project/pkg/schedule/model"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
-
-	_ "github.com/lib/pq"
 )
 
 type config struct {
-	port string
-	env  string
-	db   struct {
-		dsn string
+	Port string
+	Env  string
+	DB   struct {
+		DSN string
 	}
 }
 
@@ -26,16 +25,14 @@ type application struct {
 
 func main() {
 	var cfg config
-	flag.StringVar(&cfg.port, "port", ":5432", "API server port")
-	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://postgresql:postgres@localhost/schedule", "PostgreSQL DSN")
+	flag.StringVar(&cfg.Port, "port", ":8081", "API server port")
+	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
+	flag.StringVar(&cfg.DB.DSN, "db-dsn", "postgresql://postgres:password@localhost:5433/schedule?sslmode=disable", "PostgreSQL DSN")
 	flag.Parse()
 
-	// Connect to DB
 	db, err := openDB(cfg)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 	defer db.Close()
 
@@ -47,31 +44,25 @@ func main() {
 	app.run()
 }
 
+func openDB(cfg config) (*sql.DB, error) {
+	db, err := sql.Open("postgres", cfg.DB.DSN)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
 func (app *application) run() {
 	r := mux.NewRouter()
 
 	v1 := r.PathPrefix("/api/v1").Subrouter()
 
-	// Menu Singleton
-	// Create a new menu
 	v1.HandleFunc("/schedules", app.createScheduleHandler).Methods("POST")
-	// Get a specific menu
 	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.getScheduleHandler).Methods("GET")
-	// Update a specific menu
 	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.updateScheduleHandler).Methods("PUT")
-	// Delete a specific menu
 	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.deleteScheduleHandler).Methods("DELETE")
 
-	log.Printf("Starting server on %s\n", app.config.port)
-	err := http.ListenAndServe(app.config.port, r)
+	log.Printf("Starting server on %s\n", app.config.Port)
+	err := http.ListenAndServe(app.config.Port, r)
 	log.Fatal(err)
-}
-
-func openDB(cfg config) (*sql.DB, error) {
-	// Use sql.Open() to create an empty connection pool, using the DSN from the config // struct.
-	db, err := sql.Open("postgres", cfg.db.dsn)
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
 }

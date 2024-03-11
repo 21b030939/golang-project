@@ -1,5 +1,5 @@
 ### Create Schedule Item
-POST localhost:5432/api/v1/schedules
+POST localhost:8081/api/v1/schedules
 Content-Type: application/json
 
 {
@@ -14,8 +14,8 @@ Content-Type: application/json
     });
 %}
 
-### Get Menu Item
-GET localhost:5432/api/v1/schedules/1
+### Get Schedule Item
+GET localhost:8081/api/v1/schedules/2
 
 > {%
     client.test("Request executed successfully", function() {
@@ -23,12 +23,12 @@ GET localhost:5432/api/v1/schedules/1
     });
 %}
 
-### Update Menu Item
-PUT localhost:5432/api/v1/schedules/1
+### Update Schedule Item
+PUT localhost:8081/api/v1/schedules/2
 Content-Type: application/json
 
 {
-  "timePeriod": "13-15"
+  "timePeriod": "13-16"
 }
 
 > {%
@@ -37,8 +37,8 @@ Content-Type: application/json
     });
 %}
 
-### Delete Menu Item
-DELETE localhost:5432/api/v1/schedules/1
+### Delete Schedule Item
+DELETE localhost:8081/api/v1/schedules/1
 Content-Type: application/json
 
 > {%

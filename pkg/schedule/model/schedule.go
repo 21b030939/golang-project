@@ -23,7 +23,7 @@ type ScheduleModel struct {
 }
 
 func (m ScheduleModel) Insert(schedule *Schedule) error {
-	// Insert a new menu item into the database.
+	// Insert a new schedule item into the database.
 	query := `
 		INSERT INTO schedule (discipline, cabinet, time_period) 
 		VALUES ($1, $2, $3) 
@@ -37,7 +37,7 @@ func (m ScheduleModel) Insert(schedule *Schedule) error {
 }
 
 func (m ScheduleModel) Get(id int) (*Schedule, error) {
-	// Retrieve a specific menu item based on its ID.
+	// Retrieve a specific schedule item based on its ID.
 	query := `
 		SELECT id, created_at, updated_at, discipline, cabinet, time_period
 		FROM schedule
@@ -56,7 +56,7 @@ func (m ScheduleModel) Get(id int) (*Schedule, error) {
 }
 
 func (m ScheduleModel) Update(schedule *Schedule) error {
-	// Update a specific menu item in the database.
+	// Update a specific schedule item in the database.
 	query := `
 		UPDATE schedule
 		SET discipline = $1, cabinet = $2, time_period = $3
@@ -71,7 +71,7 @@ func (m ScheduleModel) Update(schedule *Schedule) error {
 }
 
 func (m ScheduleModel) Delete(id int) error {
-	// Delete a specific menu item from the database.
+	// Delete a specific schedule item from the database.
 	query := `
 		DELETE FROM schedule
 		WHERE id = $1

@@ -1,0 +1,48 @@
+### Create Schedule Item
+POST localhost:5432/api/v1/schedules
+Content-Type: application/json
+
+{
+  "discipline": "1",
+  "cabinet": "203",
+  "timePeriod": "15-16"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Get Menu Item
+GET localhost:5432/api/v1/schedules/1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Update Menu Item
+PUT localhost:5432/api/v1/schedules/1
+Content-Type: application/json
+
+{
+  "timePeriod": "13-15"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+### Delete Menu Item
+DELETE localhost:5432/api/v1/schedules/1
+Content-Type: application/json
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}

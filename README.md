@@ -5,10 +5,10 @@ This project is for educational purposes only. It was quite presumptuous to beli
 
 ## Schedule REST API
 ```
-POST /shedules
-GET /shedules/:id
-PUT /shedules/:id
-DELETE /shedules/:id
+POST /shedules - creating new discipline schedule
+GET /shedules/:id - getting schedule of discipline by id
+PUT /shedules/:id - updating schedule by id
+DELETE /shedules/:id - deleting schedulled discipline
 ```
 
 ## DB Structure

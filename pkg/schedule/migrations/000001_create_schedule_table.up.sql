@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS schedule
     updated_at  timestamp(0) with time zone NOT NULL DEFAULT NOW(),
     discipline  bigserial                   NOT NULL,
     cabinet     text                        NOT NULL,
-    time_period text                        NOT NULL
+    time_period int                         NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS discipline_schedule

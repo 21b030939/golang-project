@@ -3,15 +3,22 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"os"
+	"sync"
+
+	"github.com/21b030939/golang-project/pkg/jsonlog"
 	"github.com/21b030939/golang-project/pkg/schedule/model"
-	"github.com/gorilla/mux"
+	"github.com/21b030939/golang-project/pkg/vcs"
 	_ "github.com/lib/pq"
-	"log"
-	"net/http"
+)
+
+// Set version of application corresponding to value of vcs.Version.
+var (
+	version = vcs.Version()
 )
 
 type config struct {
-	Port string
+	Port int
 	Env  string
 	DB   struct {
 		DSN string
@@ -21,48 +28,53 @@ type config struct {
 type application struct {
 	config config
 	models model.Models
+	logger *jsonlog.Logger
+	wg     sync.WaitGroup
 }
 
 func main() {
 	var cfg config
-	flag.StringVar(&cfg.Port, "port", ":8081", "API server port")
+	flag.IntVar(&cfg.Port, "port", 8081, "API server port")
 	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
 	flag.StringVar(&cfg.DB.DSN, "db-dsn", "postgresql://postgres:password@localhost:5433/schedule?sslmode=disable", "PostgreSQL DSN")
 	flag.Parse()
 
+	// Init logger
+	logger := jsonlog.NewLogger(os.Stdout, jsonlog.LevelInfo)
+
 	db, err := openDB(cfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.PrintError(err, nil)
+		return
 	}
-	defer db.Close()
+	// Defer a call to db.Close() so that the connection pool is closed before the main()
+	// function exits.
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.PrintFatal(err, nil)
+		}
+	}()
 
 	app := &application{
 		config: cfg,
 		models: model.NewModels(db),
+		logger: logger,
 	}
 
-	app.run()
+	if err := app.serve(); err != nil {
+		logger.PrintFatal(err, nil)
+	}
 }
 
 func openDB(cfg config) (*sql.DB, error) {
+	// Use sql.Open() to create an empty connection pool, using the DSN from the config // struct.
 	db, err := sql.Open("postgres", cfg.DB.DSN)
 	if err != nil {
 		return nil, err
 	}
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
 	return db, nil
-}
-
-func (app *application) run() {
-	r := mux.NewRouter()
-
-	v1 := r.PathPrefix("/api/v1").Subrouter()
-
-	v1.HandleFunc("/schedules", app.createScheduleHandler).Methods("POST")
-	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.getScheduleHandler).Methods("GET")
-	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.updateScheduleHandler).Methods("PUT")
-	v1.HandleFunc("/schedules/{scheduleId:[0-9]+}", app.deleteScheduleHandler).Methods("DELETE")
-
-	log.Printf("Starting server on %s\n", app.config.Port)
-	err := http.ListenAndServe(app.config.Port, r)
-	log.Fatal(err)
 }

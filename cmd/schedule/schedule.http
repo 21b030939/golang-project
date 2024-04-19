@@ -15,7 +15,7 @@ Content-Type: application/json
 %}
 
 ### Get Schedule Item
-GET localhost:8081/api/v1/schedules/2
+GET localhost:8081/api/v1/schedules/3
 
 > {%
     client.test("Request executed successfully", function() {
@@ -24,7 +24,7 @@ GET localhost:8081/api/v1/schedules/2
 %}
 
 ### Update Schedule Item
-PUT localhost:8081/api/v1/schedules/2
+PUT localhost:8081/api/v1/schedules/4
 Content-Type: application/json
 
 {

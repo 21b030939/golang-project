@@ -27,12 +27,18 @@ type ScheduleModel struct {
 
 func (m ScheduleModel) GetAll(description string, from, to int, filters Filters) ([]*Schedule, Metadata, error) {
 
+	//костыль
+	if description == "" {
+		description = "0"
+	}
+
 	// Retrieve all menu items from the database.
+
 	query := fmt.Sprintf(
 		`
 		SELECT count(*) OVER(), id, created_at, updated_at, discipline, cabinet, time_period
 		FROM schedule
-		WHERE (LOWER(discipline) = LOWER($1) OR $1 = '')
+		WHERE (discipline = $1 OR $1 = 0)
 		AND (time_period >= $2 OR $2 = 0)
 		AND (time_period <= $3 OR $3 = 0)
 		ORDER BY %s %s, id ASC

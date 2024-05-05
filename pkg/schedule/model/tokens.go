@@ -1,13 +1,14 @@
 package model
 
 import (
+	"database/sql"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
 	"log"
 	"time"
-	"github.com/jmoiron/sqlx"
+	// "github.com/jmoiron/sqlx"
 
 	"github.com/21b030939/golang-project/pkg/schedule/validator"
 )
@@ -32,7 +33,7 @@ type (
 	// TokenModel struct wraps a sql.DB connection pool and allows us to work with the Token struct
 	// type and the tokens table in our database.
 	TokenModel struct {
-		DB       *sqlx.DB
+		DB       *sql.DB
 		InfoLog  *log.Logger
 		ErrorLog *log.Logger
 	}

@@ -1,11 +1,11 @@
 package model
 
 import (
-	// "database/sql"
+	"database/sql"
 	"errors"
 	"log"
 	"os"
-	"github.com/jmoiron/sqlx"
+	// "github.com/jmoiron/sqlx"
 )
 
 var (
@@ -24,7 +24,7 @@ type Models struct {
 	Permissions 	PermissionModel
 }
 
-func NewModels(db *sqlx.DB) Models {
+func NewModels(db *sql.DB) Models {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	return Models{

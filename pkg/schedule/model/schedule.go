@@ -1,11 +1,12 @@
 package model
 
 import (
+	"database/sql"
 	"context"
 	"fmt"
 	"log"
 	"time"
-	"github.com/jmoiron/sqlx"
+	// "github.com/jmoiron/sqlx"
 
 	"github.com/21b030939/golang-project/pkg/schedule/validator"
 )
@@ -20,7 +21,7 @@ type Schedule struct {
 }
 
 type ScheduleModel struct {
-	DB       *sqlx.DB
+	DB       *sql.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 }

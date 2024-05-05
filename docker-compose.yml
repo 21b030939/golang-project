@@ -27,7 +27,7 @@ services:
       ENV: development
       FILL: true
       MIGRATIONS: file://migrations
-      DSN: postgresql://postgres:password@db:5433/schedule?sslmode=disable
+      DSN: postgresql://postgres:password@localhost:5433/schedule?sslmode=disable
     ports:
       - "8080:8080"
     depends_on:

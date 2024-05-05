@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS users_permissions
 );
 
 INSERT INTO permissions (code)
-VALUES (''),
-			 ('');
+VALUES ('schedules:read'),
+			 ('schedules:write');

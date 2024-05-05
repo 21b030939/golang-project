@@ -2,9 +2,9 @@ package model
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"time"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/lib/pq"
 )
@@ -24,7 +24,7 @@ func (p Permissions) Include(code string) bool {
 }
 
 type PermissionModel struct {
-	DB       *sql.DB
+	DB       *sqlx.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 }

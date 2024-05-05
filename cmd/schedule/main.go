@@ -1,13 +1,15 @@
 package main
 
 import (
-	"database/sql"
+	// "database/sql"
 	"flag"
 	"os"
 	"sync"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/21b030939/golang-project/pkg/jsonlog"
 	"github.com/21b030939/golang-project/pkg/schedule/model"
+	"github.com/21b030939/golang-project/pkg/schedule/model/filter"
 	"github.com/21b030939/golang-project/pkg/vcs"
 	_ "github.com/lib/pq"
 )
@@ -20,6 +22,7 @@ var (
 type config struct {
 	Port int
 	Env  string
+	Fill bool
 	DB   struct {
 		DSN string
 	}
@@ -34,9 +37,10 @@ type application struct {
 
 func main() {
 	var cfg config
-	flag.IntVar(&cfg.Port, "port", 8081, "API server port")
+	flag.BoolVar(&cfg.Fill, "fill", false, "Fill Database with some data")
+	flag.IntVar(&cfg.Port, "port", 8080, "API server port")
 	flag.StringVar(&cfg.Env, "env", "development", "Environment (development|staging|production)")
-	flag.StringVar(&cfg.DB.DSN, "db-dsn", "postgresql://postgres:password@localhost:5433/schedule?sslmode=disable", "PostgreSQL DSN")
+	flag.StringVar(&cfg.DB.DSN, "db-dsn", "postgresql://postgres:password@db:5433/schedule?sslmode=disable", "PostgreSQL DSN")
 	flag.Parse()
 
 	// Init logger
@@ -61,14 +65,22 @@ func main() {
 		logger: logger,
 	}
 
+	if cfg.Fill{
+		err = filler.PopulateDatabase(app.models)
+		if err != nil{
+			logger.PrintFatal(err, nil)
+			return
+		}
+	}
+
 	if err := app.serve(); err != nil {
 		logger.PrintFatal(err, nil)
 	}
 }
 
-func openDB(cfg config) (*sql.DB, error) {
+func openDB(cfg config) (*sqlx.DB, error) {
 	// Use sql.Open() to create an empty connection pool, using the DSN from the config // struct.
-	db, err := sql.Open("postgres", cfg.DB.DSN)
+	db, err := sqlx.Open("postgres", cfg.DB.DSN)
 	if err != nil {
 		return nil, err
 	}

@@ -1,9 +1,9 @@
 package model
 
 import (
-	"database/sql"
 	"errors"
 	"log"
+	"github.com/jmoiron/sqlx"
 )
 
 type Discipline struct {
@@ -16,7 +16,7 @@ type Discipline struct {
 }
 
 type DisciplineModel struct {
-	DB       *sql.DB
+	DB       *sqlx.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 }

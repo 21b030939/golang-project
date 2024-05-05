@@ -62,7 +62,7 @@ func (app *application) getScheduleList(w http.ResponseWriter, r *http.Request) 
 	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
 
 	// Extract the sort query string value, falling back to "id" if it is not provided
-	// by the client (which will imply an ascending sort on menu ID).
+	// by the client (which will imply an ascending sort on schedule ID).
 	input.Filters.Sort = app.readStrings(qs, "sort", "id")
 
 	// Add the supported sort value for this endpoint to the sort safelist.
@@ -84,7 +84,7 @@ func (app *application) getScheduleList(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	app.writeJSON(w, http.StatusOK, envelope{"menus": schedules, "metadata": metadata}, nil)
+	app.writeJSON(w, http.StatusOK, envelope{"schedules": schedules, "metadata": metadata}, nil)
 }
 
 func (app *application) getScheduleHandler(w http.ResponseWriter, r *http.Request) {

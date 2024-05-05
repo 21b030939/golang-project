@@ -3,10 +3,10 @@ package model
 import (
 	"context"
 	"crypto/sha256"
-	"database/sql"
 	"errors"
 	"log"
 	"time"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/21b030939/golang-project/pkg/schedule/validator"
 	"golang.org/x/crypto/bcrypt"
@@ -33,7 +33,7 @@ func (u *User) IsAnonymous() bool {
 }
 
 type UserModel struct{
-	DB       *sql.DB
+	DB       *sqlx.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 }
@@ -122,12 +122,12 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
+		// switch {
+		// case errors.Is(err, sql.ErrNoRows):
+		// 	return nil, ErrRecordNotFound
+		// default:
+		// 	return nil, err
+		// }
 	}
 
 	return &user, nil
@@ -158,14 +158,14 @@ func (m UserModel) Update(user *User) error {
 
 	err := m.DB.QueryRowContext(ctx, query, args...).Scan(&user.Version)
 	if err != nil {
-		switch {
-		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
-			return ErrDuplicateEmail
-		case errors.Is(err, sql.ErrNoRows):
-			return ErrEditConflict
-		default:
-			return err
-		}
+		// switch {
+		// case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
+		// 	return ErrDuplicateEmail
+		// case errors.Is(err, sql.ErrNoRows):
+		// 	return ErrEditConflict
+		// default:
+		// 	return err
+		// }
 	}
 
 	return nil
@@ -214,12 +214,12 @@ func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error)
 		&user.Version,
 	)
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
+		// switch {
+		// case errors.Is(err, sql.ErrNoRows):
+		// 	return nil, ErrRecordNotFound
+		// default:
+		// 	return nil, err
+		// }
 	}
 
 	// Return the matching user.

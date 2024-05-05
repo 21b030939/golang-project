@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS schedule
     id          bigserial PRIMARY KEY,
     created_at  timestamp(0) with time zone NOT NULL DEFAULT NOW(),
     updated_at  timestamp(0) with time zone NOT NULL DEFAULT NOW(),
-    discipline  bigserial                   NOT NULL,
+    discipline  text                        NOT NULL,
     cabinet     text                        NOT NULL,
     time_period int                         NOT NULL
 );
@@ -27,7 +27,9 @@ CREATE TABLE IF NOT EXISTS discipline_schedule
     discipline  bigserial,
     schedule    bigserial,
     FOREIGN KEY (discipline)
-    REFERENCES discipline(id),
+        REFERENCES discipline(id)
+        ON DELETE CASCADE,
     FOREIGN KEY (schedule)
-    REFERENCES schedule(id)
+        REFERENCES schedule(id)
+        ON DELETE CASCADE
 );

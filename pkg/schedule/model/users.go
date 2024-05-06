@@ -1,13 +1,13 @@
 package model
 
 import (
-	"database/sql"
+	// "database/sql"
 	"context"
 	"crypto/sha256"
 	"errors"
 	"log"
 	"time"
-	// "github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/21b030939/golang-project/pkg/schedule/validator"
 	"golang.org/x/crypto/bcrypt"
@@ -34,7 +34,7 @@ func (u *User) IsAnonymous() bool {
 }
 
 type UserModel struct{
-	DB       *sql.DB
+	DB       *sqlx.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
 }
@@ -123,12 +123,12 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
+		// switch {
+		// case errors.Is(err, sql.ErrNoRows):
+		// 	return nil, ErrRecordNotFound
+		// default:
+		// 	return nil, err
+		// }
 	}
 
 	return &user, nil

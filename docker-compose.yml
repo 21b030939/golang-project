@@ -27,7 +27,7 @@ services:
       ENV: development
       FILL: true
       MIGRATIONS: file://migrations
-      DSN: postgresql://postgres:password@localhost:5433/schedule?sslmode=disable
+      DSN: postgresql://postgres:password@db:5434/schedule?sslmode=disable
     ports:
       - "8080:8080"
     depends_on:
@@ -40,11 +40,20 @@ services:
     environment:
       POSTGRES_DB: schedule
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "5433:5433"
+      - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  migrate:
+    image: migrate/migrate
+    command: ["-path", "/migrations", "-database", "postgresql://postgres:postgres@db:5434/schedule?sslmode=disable", "up"]
+    depends_on:
+      - db
+    volumes:
+      - ./pkg/schedule/migrations:/migrations
+
 
 volumes:
   pgdata:
